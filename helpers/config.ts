@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export const VALIDITY_PERIOD = 1000 * 60 * 10;
 
 export function numberGenerator(length = 4) {
@@ -7,7 +8,7 @@ export function numberGenerator(length = 4) {
   );
 }
 
-export const validateEmail = (email) => {
+export const validateEmail = (email: string) => {
   return email
     .toLowerCase()
     .match(

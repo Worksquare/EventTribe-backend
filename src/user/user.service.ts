@@ -1,91 +1,108 @@
-import {
-    Injectable,
-    NotFoundException,
-    UnauthorizedException,
-  } from '@nestjs/common';
-  import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-  import { DataSource, Repository } from 'typeorm';
-  import { User } from './entities/user.entity';
-  import { CreateUserDto } from './dto/user.dto';
-  import { validateEmail } from '../../helpers/config';
-  import { Errormessage } from 'src/Errormessage';
-  const bcrypt = require('bcrypt');
-  import  * as jwt from 'jsonwebtoken'
-import { CreateLoginDto } from './dto/login.dto';
+/* eslint-disable prettier/prettier */
+import { Repository } from 'typeorm';
+import {InjectRepository } from '@nestjs/typeorm';
+import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {CreateUserDto} from '../dto/signup.dto'
+import {User} from '../entities/user.entity'
+import * as bcrypt from 'bcrypt';
+import { Errormessage } from '@/Errormessage';
 
 
-  @Injectable()
-export class UserService {
+@Injectable()
+export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly userModel: Repository<User>,
-    ) {}
-
-
-    async createAccount(userDto: CreateUserDto): Promise<any> {
-        try {
-            const isValidEmail = validateEmail(userDto.email);
-            if (!isValidEmail)
-              return new NotFoundException(Errormessage.IncorrectEmail);
-            const userExist = await this.userModel.findOneBy({
-              email: userDto.email.toLowerCase(),
-            });
-          if(!userExist) {
-            if(userDto.password.length < 9) throw new NotFoundException(Errormessage.Passwordlength)
-            if(userDto.password == userDto.confirmPassword) {
-              const user = await this.userModel.create({
-                email: userDto.email.toLowerCase(),
-                password: userDto.password,
-                firstname: userDto.firstname,
-                lastname: userDto.lastname,
-                dateCreated: new Date(Date.now()),
-                dateUpdated: new Date(Date.now()),
-              });
-              const saltRounds = await bcrypt.genSalt(10);
-              const hashPassword = await bcrypt.hash(user.password, saltRounds);
-              user.password = hashPassword;
-              const newUser = await this.userModel.save(user);
-              return {
-                responseCode: 201,
-                success: true,
-                message:
-                  'Account successfully created ',
-              };
-             }
-             throw new NotFoundException(Errormessage.Unmatchpassword);
-          }
-          throw new NotFoundException(Errormessage.UserExist);
-        } catch (err) {
-          throw err;
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
+  async createOrUpdateUser(userDto: CreateUserDto, userId?: string): Promise<User> {
+    const { firstname, lastname, email, password, role, company, jobTitle } = userDto;
+  
+    if (userId) {
+      const userExist = await this.userRepository.findOne({ where: { id: userId } });
+      if (!userExist) {
+        throw new NotFoundException(Errormessage.Userexist);
+      }
+  
+      // Update user properties based on updateUserDto
+      if (firstname) {
+        userExist.firstname = firstname;
+      }
+      if (lastname) {
+        userExist.lastname = lastname;
+      }
+      if (email) {
+        userExist.email = email;
+      }
+      if (password) {
+        const hashPassword = await bcrypt.hash(password, 10);
+        userExist.password = hashPassword;
+      }
+      if (role) {
+        // You might need to handle role changes based on your application logic
+        userExist.role = role  // Make sure UserRole is a valid enum
+      }
+      if (company) {
+        // Only update company for organization users
+        if (userExist.role === 'organization') {
+          userExist.company = company;
+        } else {
+          throw new BadRequestException(Errormessage.UnauthorisedOperation);
         }
       }
-
-      async login(loginDto: CreateLoginDto): Promise<any> {
-        try {
-          const userExist = await this.userModel.findOneBy({
-            email: loginDto.email.toLowerCase(),
-          });
-          if (!userExist) throw new NotFoundException(Errormessage.IncorrectData);
-          const match = await bcrypt.compare(loginDto.password, userExist.password);
-          if (!match) throw new NotFoundException(Errormessage.IncorrectData);
-          // Create a token
-          const payload = {
-            id: userExist.id,
-            phone: userExist.email,
-          };
-          const options = { expiresIn: '7d' };
-          const secret = process.env.JWT_SECRET;
-          const token = jwt.sign(payload, secret, options);
-          return {
-            responseCode: 200,
-            success: true,
-            accessToken: token,
-            firstname: userExist.firstname,
-            email: userExist.email,
-            lastname: userExist.lastname,
-          };
-        } catch (err) {
-          throw err;
+      if (jobTitle) {
+        // Only update jobTitle for organization users
+        if (userExist.role === 'organization') {
+          userExist.jobTitle = jobTitle;
+        } else {
+          throw new BadRequestException(Errormessage.UnauthorisedOperation);
         }
       }
-    
+  
+      return this.userRepository.save(userExist);
+    } else {
+      // Creating a new user
+      const existingUser = await this.userRepository.findOne({ where: { email } });
+      if (existingUser) {
+        throw new ConflictException(Errormessage.UserExist);
+      }
+  
+      const newUser = this.userRepository.create({
+        firstname,
+        lastname,
+        email,
+        password,
+        role,
+        company,
+        jobTitle,
+      });
+  
+      return this.userRepository.save(newUser);
+    }
   }
+  
+  
+
+  async findOneByEmail(email: string): Promise<User | undefined> {
+    return this.userRepository.findOne({where: {email: email}});
+  }
+
+
+  async getAllUsers(): Promise<User[]> {
+    return this.userRepository.find();
+  }
+  async findById(userId: string): Promise<User | undefined> {
+    return this.userRepository.findOne({where: { id: userId}});
+  }
+
+  
+
+async deleteUser(userId: string): Promise<void> {
+  const user = await this.userRepository.findOne({where: { id : userId}});
+
+  if (user) {
+    await this.userRepository.remove(user);
+  }
+}
+
+  }
+
+  

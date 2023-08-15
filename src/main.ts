@@ -1,10 +1,25 @@
+/* eslint-disable prettier/prettier */
+import { ValidationPipe } from '@nestjs/common';
+import { setupSwagger } from './utils/setup-swagger.util';
+import helmet from 'helmet';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const PORT = process.env.port || 3000;
+  const app: NestExpressApplication = await NestFactory.create(AppModule);
+  const config: ConfigService = app.get(ConfigService);
+  const port: number = config.get<number>('PORT');
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.use(helmet({crossOriginEmbedderPolicy: false}));
   app.enableCors();
-  await app.listen(PORT);
+  setupSwagger(app);
+
+  await app.listen(port, () => {
+    console.log('[WEB]', `http://localhost:${port}`);
+  });
 }
+
 bootstrap();
