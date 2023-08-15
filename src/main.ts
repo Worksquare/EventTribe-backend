@@ -13,7 +13,7 @@ async function bootstrap() {
   const port: number = config.get<number>('PORT');
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  app.use(helmet({crossOriginEmbedderPolicy: false}));
+  app.use(helmet());
   app.enableCors();
   setupSwagger(app);
 
