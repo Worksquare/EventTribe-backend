@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { ValidationPipe } from '@nestjs/common';
 import { setupSwagger } from './utils/setup-swagger.util';
-import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -13,8 +12,6 @@ async function bootstrap() {
   const port: number = config.get<number>('PORT');
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  app.use(helmet());
-  app.enableCors();
   setupSwagger(app);
 
   await app.listen(port, () => {
