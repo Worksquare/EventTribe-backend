@@ -5,18 +5,17 @@ import { Profile, Strategy } from 'passport-facebook';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../../user/user.service';
 
-
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
   constructor(
     private readonly usersService: UsersService,
-     configService: ConfigService,
+    configService: ConfigService,
   ) {
     super({
       clientID: configService.get<string>('FACEBOOK_CLIENT_ID'),
       clientSecret: configService.get<string>('FACEBOOK_CLIENT_SECRET'),
       callbackURL: configService.get<string>('FACEBOOK_CALLBACK_URL'),
-      scope: 'email', 
+      scope: 'email',
       profileFields: ['emails', 'name'],
       // passReqToCallback: true,
     });
@@ -32,11 +31,11 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     console.log('Received accessToken:', accessToken);
     console.log('Received refreshToken:', refreshToken);
     console.log('Received profile:', profile);
-    const { id, name, emails, photos } = profile
+    const { id, name, emails, photos } = profile;
     try {
       const email = profile['_json']['email'];
       if (!email) {
-        new Error('Failed to receive email from Facebook. Please try again :(')
+        new Error('Failed to receive email from Facebook. Please try again :(');
       }
 
       let user = await this.usersService.findOneByEmail(email);
@@ -59,13 +58,13 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
         facebook: {
           accessToken,
           email,
-          profileId: profile.id
+          profileId: profile.id,
         },
         password: '',
         isVerified: false,
         emailVerificationTokenExpiresAt: undefined,
         dateCreated: undefined,
-        dateUpdated: undefined
+        dateUpdated: undefined,
       });
 
       const userInfo = {
@@ -82,7 +81,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       };
       done(null, payload);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

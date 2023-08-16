@@ -6,16 +6,22 @@ import {
   Unique,
   BaseEntity,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, Length, IsString, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  Length,
+  IsString,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
-
 
 @Entity('users')
 @Unique(['email'])
-export class User extends BaseEntity{
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id:string;
-  
+  id: string;
+
   @IsString()
   @Column({ nullable: false, type: 'text' })
   firstname: string;
@@ -35,7 +41,7 @@ export class User extends BaseEntity{
   @IsNotEmpty()
   @Length(6, 20)
   password: string;
-  
+
   @IsString()
   @IsNotEmpty()
   @IsEnum(['individual', 'organization'])
@@ -44,7 +50,7 @@ export class User extends BaseEntity{
   @IsString()
   @IsNotEmpty()
   @Length(4, 50)
-  @IsEnum(['organization']) 
+  @IsEnum(['organization'])
   @IsOptional()
   company?: string; // Optional for organization
 
@@ -81,8 +87,14 @@ export class User extends BaseEntity{
   @Column({ default: false })
   isVerified: boolean;
 
-  @Column({ type: 'timestamp', name: 'emailVerificationTokenExpiresAt', nullable: false })
-  public emailVerificationTokenExpiresAt: Date | null = new Date(Date.now() + 180 * 1000);
+  @Column({
+    type: 'timestamp',
+    name: 'emailVerificationTokenExpiresAt',
+    nullable: false,
+  })
+  public emailVerificationTokenExpiresAt: Date | null = new Date(
+    Date.now() + 180 * 1000,
+  );
 
   public dateCreated: Date;
 

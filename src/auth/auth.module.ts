@@ -5,16 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from '../entities/user.entity';
-import { UserModule} from '../user/user.module'
+import { UserModule } from '../user/user.module';
 import { MailService } from '../shared/email/email.service';
-import { JwtAuthService } from './social/jwt-auth.service'
+import { JwtAuthService } from './social/jwt-auth.service';
 import { FacebookStrategy } from './social/facebook/facebook-oauth.service';
-import { GoogleStrategy } from './social/google/google-oauth.service'
-
-
+import { GoogleStrategy } from './social/google/google-oauth.service';
 
 @Module({
   imports: [
@@ -38,7 +36,7 @@ import { GoogleStrategy } from './social/google/google-oauth.service'
           secure: true,
           auth: {
             user: configService.get<string>('EMAIL_USERNAME'),
-            pass:configService.get<string>('EMAIL_PASSWORD'),
+            pass: configService.get<string>('EMAIL_PASSWORD'),
           },
           tls: {
             minVersion: 'TLSv1.2',
@@ -49,10 +47,16 @@ import { GoogleStrategy } from './social/google/google-oauth.service'
       }),
       inject: [ConfigService],
     }),
-    UserModule
+    UserModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, FacebookStrategy, GoogleStrategy, MailService, JwtAuthService,],
+  providers: [
+    AuthService,
+    FacebookStrategy,
+    GoogleStrategy,
+    MailService,
+    JwtAuthService,
+  ],
   exports: [AuthService, MailService, JwtAuthService],
 })
 export class AuthModule {}

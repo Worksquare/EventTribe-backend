@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmOptionsFactory, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { NODE_ENV } from '../constant/app.contants';
-import { SnakeNamingStrategy } from "../../shared/strategy/snake-naming.strategy";
+import { SnakeNamingStrategy } from '../../shared/strategy/snake-naming.strategy';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -20,11 +20,11 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: this.config.get<string>('DATABASE_PASSWORD'),
       namingStrategy: new SnakeNamingStrategy(),
       entities: ['dist/**/*.entity.{ts,js}'],
-    //   migrations: ['dist/migrations/*.{ts,js}'],
-    //   migrationsTableName: 'typeorm_migrations',
-      logging: this.config.get("NODE_ENV") === NODE_ENV.DEVELOPMENT,
-      synchronize: this.config.get("NODE_ENV") === NODE_ENV.DEVELOPMENT,
-      logger: 'file'
+      //   migrations: ['dist/migrations/*.{ts,js}'],
+      //   migrationsTableName: 'typeorm_migrations',
+      logging: this.config.get('NODE_ENV') === NODE_ENV.DEVELOPMENT,
+      synchronize: this.config.get('NODE_ENV') === NODE_ENV.DEVELOPMENT,
+      logger: 'file',
     };
   }
 }

@@ -16,7 +16,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientSecret: configService.get<string>('GOOGLE_CLIENT_SECRET'),
       callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL'),
       scope: ['email', 'profile'],
-      profileFields: ["emails", "name"],
+      profileFields: ['emails', 'name'],
     });
   }
 
@@ -27,19 +27,19 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     console.log('Received accessToken:', accessToken);
-  console.log('Received refreshToken:', refreshToken);
-  console.log('Received profile:', profile);
+    console.log('Received refreshToken:', refreshToken);
+    console.log('Received profile:', profile);
     const { name, emails, photos } = profile;
 
     try {
       const email = profile['_json']['email'];
       if (!email) {
         return done(
-          new Error('Failed to receive email from Google. Please try again :(')
+          new Error('Failed to receive email from Google. Please try again :('),
         );
       }
 
-      let user = await this.usersService.findOneByEmail( email );
+      let user = await this.usersService.findOneByEmail(email);
 
       if (user) {
         // Update the user's profileAvatar if it exists in the profile
@@ -55,7 +55,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         firstname: profile.displayName,
         lastname: profile.displayName,
         email,
-        avatar: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null,
+        avatar:
+          profile.photos && profile.photos.length > 0
+            ? profile.photos[0].value
+            : null,
         google: {
           accessToken,
           profileId: profile.id,
@@ -65,7 +68,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         isVerified: false,
         emailVerificationTokenExpiresAt: undefined,
         dateCreated: undefined,
-        dateUpdated: undefined
+        dateUpdated: undefined,
       });
 
       const userInfo = {
@@ -83,7 +86,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       };
       return done(null, payload);
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

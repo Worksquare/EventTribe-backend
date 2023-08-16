@@ -7,7 +7,7 @@ export class UserInterface {
   password: string;
   company?: string;
   role: 'individual' | 'organization';
-  jobTitle?: string; 
+  jobTitle?: string;
   isVerified: boolean;
   google?: {
     accessToken: string;

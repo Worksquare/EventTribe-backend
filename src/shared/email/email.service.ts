@@ -2,13 +2,12 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
-
 @Injectable()
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendVerificationEmail(email: string, link: string): Promise<void> {
-    await this.mailerService.sendMail ({
+    await this.mailerService.sendMail({
       from: `Worksquare <${process.env.EMAIL_USERNAME}>`,
       to: email,
       subject: 'Verify your email address for successful account activation',
@@ -25,12 +24,12 @@ export class MailService {
         <p style="margin-bottom:0px;">Thank you</p>
         <strong>Worksquare Support Team</strong>
     `,
-    })
+    });
   }
 
   async sendResetPasswordEmail(email: string, link: string): Promise<void> {
-    await this.mailerService.sendMail ({
-      from:`Worksquare  <${process.env.EMAIL_USERNAME}>`,
+    await this.mailerService.sendMail({
+      from: `Worksquare  <${process.env.EMAIL_USERNAME}>`,
       to: email,
       subject: 'Verify your email address for successful account activation',
       html: `
@@ -45,8 +44,7 @@ export class MailService {
         <p style="margin-bottom:0px;">Thank you</p>
         <strong>Worksquare Support Team</strong>
     `,
-    })
-
+    });
   }
 
   async sendForgotPasswordEmail(email: string, link: string): Promise<void> {
@@ -65,5 +63,4 @@ export class MailService {
       `,
     });
   }
-
 }
