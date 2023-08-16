@@ -14,7 +14,7 @@ import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/signup.dto';
 import { Errormessage } from 'src/Errormessage';
 import { UserInterface } from '../interface/user.interface';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import moment from 'moment';
 import { UsersService } from '../user/user.service';

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/signup.dto';
 import { User } from '../entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Errormessage } from '@/Errormessage';
 
 @Injectable()
