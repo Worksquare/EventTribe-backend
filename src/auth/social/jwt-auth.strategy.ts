@@ -1,31 +1,33 @@
 /* eslint-disable prettier/prettier */
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-export type JwtPayload = { sub: string; name: string };
+export type JwtPayload = { sub: string; email: string };
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
-    const extractJwtFromCookie = (req) => {
-      let token = null;
-
-      if (req && req.cookies) {
-        token = req.cookies['jwt'];
-      }
-      return token;
-    };
-
     super({
-      jwtFromRequest: extractJwtFromCookie,
-      ignoreExpiration: false,
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        (req: { cookies: { jwt: any; }; }) => {
+          // Extract JWT token from the 'jwt' cookie
+          if (req && req.cookies) {
+            return req.cookies.jwt;
+          }
+          return null;
+        },
+      ]),
       secretOrKey: configService.get<string>('ACCESS_TOKEN_SECRET'),
+      ignoreExpiration: false, // Ensure token expiration is checked
     });
   }
 
   async validate(payload: JwtPayload) {
-    return { id: payload.sub, username: payload.name };
+    // Checking if the user exists in the database
+    // If the validation fails, throw an UnauthorizedException
+    return { id: payload.sub, email: payload.email };
   }
 }

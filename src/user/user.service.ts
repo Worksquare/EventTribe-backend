@@ -14,6 +14,9 @@ import { Errormessage } from '@/Errormessage';
 
 @Injectable()
 export class UsersService {
+  getUserById(userId: string) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}

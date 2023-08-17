@@ -131,7 +131,7 @@ export class AuthController {
     @Req() req: Request,
     res: Response,
   ): Promise<any> {
-    const { accessToken } = this.jwtAuthService.login(req.user);
+    const { accessToken } = await this.jwtAuthService.login(req.user.toString());
     res.cookie('jwt', accessToken, {
       httpOnly: true,
       sameSite: 'lax',
@@ -154,7 +154,7 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<any> {
-    const { accessToken } = this.jwtAuthService.login(req.user);
+    const { accessToken } = await this.jwtAuthService.login(req.user.toString());
     res.cookie('jwt', accessToken, {
       httpOnly: true,
       sameSite: 'lax',

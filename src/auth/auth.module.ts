@@ -13,6 +13,7 @@ import { MailService } from '../shared/email/email.service';
 import { JwtAuthService } from './social/jwt-auth.service';
 import { FacebookStrategy } from './social/facebook/facebook-oauth.service';
 import { GoogleStrategy } from './social/google/google-oauth.service';
+import {JwtAuthStrategy} from './social/jwt-auth.strategy'
 
 @Module({
   imports: [
@@ -56,7 +57,8 @@ import { GoogleStrategy } from './social/google/google-oauth.service';
     GoogleStrategy,
     MailService,
     JwtAuthService,
+    JwtAuthStrategy
   ],
-  exports: [AuthService, MailService, JwtAuthService],
+  exports: [AuthService, JwtModule, MailService, JwtAuthService],
 })
 export class AuthModule {}
