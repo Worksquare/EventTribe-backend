@@ -63,7 +63,7 @@ export class AuthController {
     return this.authService.login(createLoginDto);
   }
 
-  @Post('/reset/:token')
+  @Post('/reset')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     type: ResetPasswordDto,

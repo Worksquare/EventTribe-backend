@@ -210,6 +210,7 @@ export class AuthService {
       
 
       // Email the user a unique forgot password link
+      // const resetPasswordUrl = `${process.env.RESET_PASSWORD_BASE_URL}/api/resetPassword/${token}`;
       const resetPasswordUrl = `${process.env.APP_SERVICE_URL}/api/resetPassword/${ token }`;
       await this.emailService.sendForgotPasswordEmail(
         userExist.email,
@@ -310,6 +311,7 @@ export class AuthService {
       });
 
       // Email the user a unique reset password link
+      // const resetPasswordUrl = `${process.env.RESET_PASSWORD_BASE_URL}/api/resetPassword/${token}`;
       const resetPasswordUrl = `${process.env.APP_SERVICE_URL}/api/resetPassword/${token}`;
       await this.emailService.sendResetPasswordEmail(
         userExist.email,
