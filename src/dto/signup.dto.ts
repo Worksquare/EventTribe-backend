@@ -17,7 +17,7 @@ import {
   Unique,
   BaseEntity,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
@@ -38,20 +38,29 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiPropertyOptional({
+    name: 'role',
+    type: 'enums',
+  })
   @IsEnum(['individual', 'organization'])
   @IsOptional()
   role?: 'individual' | 'organization';
 
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiPropertyOptional({
+    name: 'company',
+    type: 'string',
+  })
   @Length(1, 255)
   @IsOptional()
   // @IsEnum(['organization']) // Only required for organization users
   company?: string;
 
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiPropertyOptional({
+    name: 'jobTittle',
+    type: 'string',
+  })
   @Length(1, 255)
   @IsOptional()
   // @IsEnum(['organization']) // Only required for organization users
@@ -68,7 +77,10 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @ApiProperty()
+  @ApiPropertyOptional({
+    name: 'google',
+    type: 'string',
+  })
   @IsOptional()
   google?: {
     accessToken: string;
@@ -77,7 +89,10 @@ export class CreateUserDto {
   };
 
   @IsString()
-  @ApiProperty()
+  @ApiPropertyOptional({
+    name: 'facebook',
+    type: 'string',
+  })
   @IsOptional()
   facebook?: {
     accessToken: string;
@@ -85,7 +100,10 @@ export class CreateUserDto {
     profileId: string;
   };
   @IsString()
-  @ApiProperty()
+  @ApiPropertyOptional({
+    name: 'avatar',
+    type: 'string',
+  })
   @IsOptional()
   avatar?: string;
 
