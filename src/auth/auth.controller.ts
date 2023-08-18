@@ -3,7 +3,9 @@ import {
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
+  ApiParam,
   ApiTags,
+  ApiBody,
 } from '@nestjs/swagger';
 import {
   Controller,
@@ -40,6 +42,7 @@ export class AuthController {
 
   @Post('/signup')
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type:CreateUserDto })
   @ApiOkResponse({
     type: CreateUserDto,
     description: 'Successfully created user',
@@ -54,7 +57,8 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: CreateUserDto, description: 'Login successfully' })
+  @ApiBody({ type: CreateLoginDto })
+  @ApiOkResponse({ type: CreateLoginDto, description: 'Login successfully' })
   @ApiBadRequestResponse({
     description: 'User with the email and password already exists.',
   })
@@ -65,6 +69,7 @@ export class AuthController {
 
   @Post('/reset')
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: ResetPasswordDto })
   @ApiOkResponse({
     type: ResetPasswordDto,
     description: 'Reset password is successfully',
@@ -79,8 +84,9 @@ export class AuthController {
 
   @Get('/resetLink')
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: ResetPasswordLinkDto })
   @ApiOkResponse({
-    type: ResetPasswordDto,
+    type: ResetPasswordLinkDto,
     description: 'Reset password successfully sent',
   })
   @ApiBadRequestResponse({ description: 'Invalid email.' })
@@ -93,6 +99,7 @@ export class AuthController {
 
   @Post('/forgot')
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: ResetPasswordDto })
   @ApiOkResponse({
     type: ResetPasswordDto,
     description: 'Reset password successfully sent',
@@ -107,8 +114,15 @@ export class AuthController {
 
   @Get('/verify/:token')
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: EmailVerificationDto })
+  @ApiParam({
+    name: 'token',
+    required: true,
+    description: 'An access token from login user',
+    type: String
+  })
   @ApiOkResponse({
-    type: ResetPasswordDto,
+    type: EmailVerificationDto,
     description: 'The account has been verified successfully.',
   })
   @ApiBadRequestResponse({ description: 'Invalid token.' })

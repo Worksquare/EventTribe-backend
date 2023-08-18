@@ -4,8 +4,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function setupSwagger(app: INestApplication): void {
   const options = new DocumentBuilder()
-    .setTitle('NestJS-Authentication-Full')
-    .setContact('olaobey15@gmail.com', 'olaobey', 'Samuel')
+    .setTitle('Eventribe-backend')
+    .setDescription('The eventribe API description')
+    .setContact('Eventribe', 'Backend', 'Team C')
+    .setVersion('1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
