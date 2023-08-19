@@ -14,9 +14,6 @@ import { Errormessage } from '@/Errormessage';
 
 @Injectable()
 export class UsersService {
-  getUserById(userId: string) {
-    throw new Error('Method not implemented.');
-  }
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
@@ -50,22 +47,20 @@ export class UsersService {
         userExist.password = hashPassword;
       }
       if (role) {
-        // You might need to handle role changes based on your application logic
-        userExist.role = role; // Make sure UserRole is a valid enum
+        userExist.role = role; 
       }
-      if (company) {
-        // Only update company for organization users
-        if (userExist.role === 'organization') {
+
+      // Only update company and jobTitle for organization users
+      if (role === 'organization') {
+        if (company) {
           userExist.company = company;
-        } else {
-          throw new BadRequestException(Errormessage.UnauthorisedOperation);
         }
-      }
-      if (jobTitle) {
-        // Only update jobTitle for organization users
-        if (userExist.role === 'organization') {
+        if (jobTitle) {
           userExist.jobTitle = jobTitle;
-        } else {
+        }
+      } else if (role === 'individual') {
+        // Throw an error if user is an individual user and tries to update company or jobTitle
+        if (company || jobTitle) {
           throw new BadRequestException(Errormessage.UnauthorisedOperation);
         }
       }
