@@ -7,6 +7,7 @@ import {
   ConflictException,
   NotFoundException,
   UnauthorizedException,
+  ForbiddenException
 } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -71,6 +72,9 @@ export class AuthService {
       let newUser: User;
 
       if (role === 'individual') {
+        if (userDto.company || userDto.jobTitle) {
+          throw new ForbiddenException(Errormessage.UnauthorisedOperation);
+        }  
         const expirationTime = moment().add(3, 'minutes'); // Calculate expiration time
         newUser = await this.usersService.createOrUpdateUser({
           ...userDto,
@@ -80,25 +84,14 @@ export class AuthService {
           dateUpdated: new Date(),
         });
       } else if (role === 'organization') {
+        if (!userDto.company || !userDto.jobTitle) {
+          throw new BadRequestException(Errormessage.UnauthorisedOperation);
+        }  
         const expirationTime = moment().add(3, 'minutes'); // Calculate expiration time
         newUser = await this.usersService.createOrUpdateUser({
           ...userDto,
           password: hashPassword,
           emailVerificationTokenExpiresAt: expirationTime.toDate(), // 3 minutes from now
-          dateCreated: new Date(),
-          dateUpdated: new Date(),
-        });
-      }
-
-      // If newUser was not set by role conditions, create a default user
-      if (!newUser) {
-        newUser = await this.usersService.createOrUpdateUser({
-          email,
-          password: hashPassword,
-          firstname: userDto.firstname,
-          lastname: userDto.lastname,
-          isVerified: false,
-          emailVerificationTokenExpiresAt: new Date(Date.now() + 180 * 1000), // 3 minutes from now
           dateCreated: new Date(),
           dateUpdated: new Date(),
         });
